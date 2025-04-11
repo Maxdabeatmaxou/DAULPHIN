@@ -6,23 +6,28 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get install -y \
     git wget curl build-essential cmake python3 python3-pip python-is-python3
 
-# Clone and build llama.cpp
+# Clone llama.cpp
 WORKDIR /app
 RUN git clone https://github.com/ggerganov/llama.cpp
-WORKDIR /app/llama.cpp
-RUN mkdir build && cd build && cmake .. && cmake --build . --config Release
 
-# Back to base dir
+# Build llama.cpp proprement
+WORKDIR /app/llama.cpp
+RUN mkdir build
+WORKDIR /app/llama.cpp/build
+RUN cmake ..
+RUN cmake --build . --config Release
+
+# Back to root dir
 WORKDIR /app
 
-# Copy your code
+# Copy code
 COPY . .
 
-# Install Python deps
+# Python deps
 RUN pip install -r requirements.txt
 
-# ENV path to compiled binary
+# Path to binary
 ENV LLAMA_BIN=/app/llama.cpp/build/main
 
-# Run handler
+# RunPod handler
 CMD ["python", "runpod_handler.py"]
