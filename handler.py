@@ -1,7 +1,7 @@
 import subprocess
 
 MODEL_PATH = "/workspace/dolphin-llama3-8b.Q4_K_M.gguf"
-LLAMA_BIN = "/app/llama.cpp/build/bin/main"
+LLAMA_BIN = "/app/llama.cpp/build/main"
 
 def generate(prompt, temperature=0.7, max_tokens=512):
     command = [

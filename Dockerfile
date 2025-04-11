@@ -2,32 +2,33 @@ FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Install dependencies
+# Install all required dependencies for llama.cpp and Python
 RUN apt-get update && apt-get install -y \
-    git wget curl build-essential cmake python3 python3-pip python-is-python3
+    git wget curl build-essential cmake python3 python3-pip python-is-python3 \
+    clang libopenblas-dev libomp-dev pkg-config
 
 # Clone llama.cpp
 WORKDIR /app
 RUN git clone https://github.com/ggerganov/llama.cpp
 
-# Build llama.cpp proprement
+# Build llama.cpp
 WORKDIR /app/llama.cpp
 RUN mkdir build
 WORKDIR /app/llama.cpp/build
 RUN cmake ..
 RUN cmake --build . --config Release
 
-# Back to root dir
+# Back to base dir
 WORKDIR /app
 
-# Copy code
+# Copy handler code
 COPY . .
 
-# Python deps
-RUN pip install -r requirements.txt
+# Install Python dependencies
+RUN pip install --upgrade pip && pip install -r requirements.txt
 
-# Path to binary
+# Environment variable pointing to the llama binary
 ENV LLAMA_BIN=/app/llama.cpp/build/main
 
-# RunPod handler
+# Start the RunPod handler
 CMD ["python", "runpod_handler.py"]
